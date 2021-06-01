@@ -1,0 +1,124 @@
+actors: 41
+Index: 1
+Name: Daisy Ridley
+Age: 25
+Index: 2
+Name: John Boyega
+Age: 25
+Index: 3
+Name: Mark Hamill
+Age: 66
+Index: 4
+Name: Dwayne Johnson
+Age: 45
+Index: 5
+Name: Karen Gillan
+Age: 30
+Index: 6
+Name: Kevin Hart
+Age: 38
+Index: 7
+Name: Lin Shaye
+Age: 74
+Index: 8
+Name: Leigh Whannell
+Age: 40
+Index: 9
+Name: Angus Sampson
+Age: 38
+Index: 10
+Name: Hugh Jackman
+Age: 49
+Index: 11
+Name: Michelle Williams
+Age: 37
+Index: 12
+Name: Zac Efron
+Age: 30
+Index: 13
+Name: Anna Kendrick
+Age: 32
+Index: 14
+Name: Rebel Wilson
+Age: 37
+Index: 15
+Name: Brittany Snow
+Age: 31
+Index: 16
+Name: John Cena
+Age: 40
+Index: 17
+Name: Kate McKinnon
+Age: 34
+Index: 18
+Name: Bobby Cannavale
+Age: 47
+Index: 19
+Name: Jessica Chastain
+Age: 40
+Index: 20
+Name: Idris Elba
+Age: 45
+Index: 21
+Name: Kevin Costner
+Age: 62
+Index: 22
+Name: Gary Oldman
+Age: 59
+Index: 23
+Name: Lily James
+Age: 28
+Index: 24
+Name: Kristin Scott Thomas
+Age: 57
+Index: 25
+Name: Anthony Gonzalez
+Age: 12
+Index: 26
+Name: Gael Garcia Bernal
+Age: 39
+Index: 27
+Name: Benjamin Bratt
+Age: 54
+Index: 28
+Name: Christopher Plummer
+Age: 88
+Index: 29
+Name: Mark Wahlberg
+Age: 46
+Index: 30
+Name: Taraji P. Henson
+Age: 48
+Index: 31
+Name: Billy Brown
+Age: 47
+Index: 32
+Name: Jahi Di'Allo Winston
+Age: 14
+Index: 33
+Name: Meryl Strip
+Age: 68
+Index: 34
+Name: Tom Hanks
+Age: 61
+Index: 35
+Name: Sarah Paulson
+Age: 43
+Index: 36
+Name: Liam Neeson
+Age: 65
+Index: 37
+Name: Vera Farmiga
+Age: 44
+Index: 38
+Name: Patrick Wilson
+Age: 44
+Index: 39
+Name: Ben Whishaw
+Age: 37
+Index: 40
+Name: Hugh Grant
+Age: 57
+Index: 41
+Name: Hugh Bonneville
+Age: 54

@@ -1,0 +1,43 @@
+Cinemas: 6
+Cinema: NOS Alameda
+Movies: 5
+Star Wars: The Last Jedi
+Insidious: The Last Key
+The Greatest Snowman
+Ferdinand
+The Post
+Cinema: NOS Nascente
+Movies: 5
+Star Wars: The Last Jedi
+Jumanji: Welcome to the Jungle
+Pitch Perfect 3
+Darkest Hour
+The Commuter
+Cinema: NOS MaiaShopping
+Movies: 5
+Star Wars: The Last Jedi
+The Greatest Snowman
+Ferdinand
+All the Money in the World
+Paddington 2
+Cinema: NOS NorteShopping
+Movies: 5
+Jumanji: Welcome to the Jungle
+Insidious: The Last Key
+Pitch Perfect 3
+Coco
+Proud Mary
+Cinema: NOS Mar Shopping
+Movies: 5
+Star Wars: The Last Jedi
+Jumanji: Welcome to the Jungle
+Molly's Game
+All the Money in the World
+The Commuter
+Cinema: NOS GaiaShopping
+Movies: 5
+Jumanji: Welcome to the Jungle
+The Greatest Snowman
+Molly's Game
+Coco
+The Post

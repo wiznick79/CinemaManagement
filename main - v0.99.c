@@ -1,0 +1,1602 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <conio.h>
+
+#define NAME_SIZE 50    // max number of chars in the string
+#define VECTOR_SIZE 100  // max number of movies or actors we can save in the memory
+
+// Cinema Management program in C by Nikolaos Perris (#36261)
+// Version 0.99 (21/01/2018)
+// for Introduction to Algorithms and Programming
+// Universidade Fernando Pessoa
+
+//Structure for cinemas
+struct cinema {
+    int c_index;                            // Automatically generated index
+    char c_name[NAME_SIZE];                 // Name of the cinema
+    int movies_num;                         // Number of movies associated to each cinema, selected by the user
+    char movies[VECTOR_SIZE][NAME_SIZE];    // Movies associated to the cinema
+};
+
+//Structure for movies
+struct movie {
+    int m_index;                // Automatically generated index
+    char m_title[NAME_SIZE];    // Title of the movie
+    char director[NAME_SIZE];   // Director of the movie
+    char genre[NAME_SIZE];      // Genre of the movie
+    char duration[4];           // Duration of the movie
+    char min_age[3];            // Minimum age requirement of the movie
+    int actors_num;             // Number of actors associated to the movie, selected by the user
+    char actors[VECTOR_SIZE][NAME_SIZE]; // Actors associated to the movie
+};
+
+//Structure for actors
+struct actor {
+    int a_index;                // Automatically generated index
+    char a_name[NAME_SIZE];     // Name of the actor
+    char a_age[3];              // Age of the actor
+};
+
+//The functions used
+void menu_title(void); // The top part of the menus with name/version
+void user_menu(void); // User sub-menu
+void admin_menu(void); // Administrator sub-menu
+void cinemas_menu(void); // The cinemas sub-menu
+void movies_menu(void); // The movies sub-menu
+void actors_menu(void); // The actors sub-menu
+void genres_menu(void); // The genres sub-menu
+void admin_pass(void); // Asks for administrator password, if correct it calls the admin menu, else displays error message.
+void change_pass(void); // Changes the default admin password, it asks twice, for confirmation
+void save_pass(void); // Saves admin password to file topsecret.dat
+void load_pass(void); // Loads admin password from file topsecret.dat
+void create_cinema(struct cinema * m); // Creates a new cinema
+void edit_cinema(struct cinema * m);  // Edit an existing cinema that the user selects
+void delete_cinema(struct cinema * m); // Deletes a cinema
+void list_cinemas(void); // List of the cinemas
+void list_movies_of_cinema(void); // Prompts the user to select a cinema and displays the movies played in it
+void list_cinemas_of_movie(void); // Prompts the user to select a movie and displays the cinemas the movie is available in
+void list_movies_by_genre(void); // Lists the movie genres, prompts the user to select a genre, then lists the movies of that genre and the cinemas they are available in
+void associate_movies_and_cinemas(void); // Associates movies to cinemas
+void save_cinemas_to_file(void); // Saves to txt file with the movies associated to each cinema
+void load_cinemas_from_file(void); // Checks the number of cinemas in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+void load_cinemas_from_file2(void); // Loads from txt file the movies previously associated to each cinema
+void create_movie(struct movie * m); // Create new movie record
+void edit_movie(struct movie * m); // Edit an existing movie that the user selects
+void delete_movie(struct movie * m); // Delete a movie that the user selects
+void associate_actors_and_movies(struct actor * m); // Prompts the user to select a movie, then the number of actors he wants to associate.
+void list_movies(void); // List of the movies with title only
+void print_movie(struct movie * m); // Prints the title of the movie
+void list_full_movies_info(void); // List of the movies with all info, including the actors
+void print_full_movie_info(struct movie * m); // Prints all the info of the movie
+void save_movies_to_file(void); // Save movies to txt file movies.txt
+void load_movies_from_file(void); // Checks the number of movies in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+void load_movies_from_file2(void); // Load movies from txt file movies.txt
+void create_actor(struct actor * m); // Create a new actor record
+void edit_actor(struct actor * m); // Edit an existing actor that the user selects
+void delete_actor(struct actor * m); // Deletes an actor that the user selects
+void list_actors(void); // List of the actors
+void print_actor(struct actor * m); // Prints index and actor
+void list_full_actors_info(); // List of actors with all info
+void list_movies_of_actor(void); // Lists the movies of the selected actor
+void save_actors_to_file(void); // Save actors to txt file actors.txt
+void load_actors_from_file(void); // Checks the number of actors in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+void load_actors_from_file2(void); //Load actors from txt file actors.txt
+void create_genre(void); // Creates a new movie genre
+void edit_genre(void); // Lists all movie genres and prompts user to select which one to edit, then it scans the new input and saves it
+void delete_genre(void); // Lists all movie genres and prompts user to select which one to delete, then it moves the array elements after the selection, one position to the left, deleting the selection
+void list_genres(void); // Lists all the movie genres
+void save_genres_to_file(void); // Saves movies genres to txt file genres.txt
+void load_genres_from_file(void); // Checks the number of genres in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+void load_genres_from_file2(void); // Loads movie genres from txt file genres.txt
+void save_db(void); // Saves the database of all data, if they are not empty. If empty it does not save, to avoid overwriting existing files.
+void invalid_selection(void); // Displays a message that an invalid selection was made
+void pressanykey(void);   // Displays message to press any key to continue
+void no_cinemas(void); //Prints a message that there are no cinemas
+void no_movies(void); //Prints a message that there are no movies
+void no_actors(void); //Prints a message that there are no actors
+void no_genres(void); //Prints a message that there are no actors
+void no_changes(void); // Displays message that no changes were made
+
+// Global variables
+struct cinema vec_cinemas[VECTOR_SIZE];
+struct movie vec_movies[VECTOR_SIZE];
+struct actor vec_actors[VECTOR_SIZE];
+char genres[NAME_SIZE][VECTOR_SIZE];        // array to store the genres
+int num_cinemas=0;
+int num_movies=0;
+int num_actors=0;
+int num_genres=0;
+char cinemas_file[]="cinemas.txt"; // Name of the file where the info about the cinemas are saved.
+char movies_file[]="movies.txt"; // Name of the file where the info about the movies are saved.
+char actors_file[]="actors.txt"; // Name of the file where the info about the actors are saved.
+char genres_file[]="genres.txt"; // Name of the file where the info about the movie genres are saved.
+char def_pw[20]="admin";  // Default admin password. It's not used if a password file is found.
+char pwfile[]="topsecret.dat";  // Name of the file where the admin password is saved, after it is changed from the default
+
+int main(int argc, char const *argv[])
+{
+    load_pass();  // Loads the admin password from file when program starts
+    char op;
+    do {
+        menu_title();
+        printf("\t\t==================================\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [1] User menu                ||\n"); // Displays user sub-menu
+        printf("\t\t|| [2] Administrator menu       ||\n"); // Displays admin sub-menu
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [8] Load databases           ||\n"); // Loads databases of cinemas,movies,actors,genres
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [Q] Quit program             ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t==================================\n");
+        fflush(stdin);
+        printf("\t\tSelect an option:");
+        op=getch();
+        switch (op) {
+            case '1':
+                user_menu();
+                break;
+            case '2':
+                admin_pass();
+                break;
+            case '8':   // Load cinemas, movies, actors and genres from their txt files
+                load_cinemas_from_file();
+                load_movies_from_file();
+                load_actors_from_file();
+                load_genres_from_file();
+                pressanykey();
+                break;
+            case 'q':
+            case 'Q':
+                break;
+            default:
+                invalid_selection();
+        }
+    }  while (op!='q' && op!='Q');
+    return 0;
+}
+
+void menu_title() // The top part of the menus with name/version
+{
+    system("cls");
+    printf("\t\t==================================\n");
+    printf("\t\t||   Cinema Management  v0.99   ||\n");
+    printf("\t\t----------------------------------\n");
+    printf("\t\t||   (c) 2018 Nikolaos Perris   ||\n");
+    printf("\t\t==================================\n\n");
+}
+
+void user_menu() // User sub-menu
+{
+    char op;
+    do {
+        menu_title();
+        printf("\t\t==================================\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [1] List cinemas             ||\n"); // Lists all cinemas
+        printf("\t\t|| [2] List movies              ||\n"); // Lists all movies
+        printf("\t\t|| [3] List movies of a cinema  ||\n"); // Lists movies of a cinema
+        printf("\t\t|| [4] List cinemas for a movie ||\n"); // Lists cinemas for a movie
+        printf("\t\t|| [5] List movies of a genre   ||\n"); // Lists movies of a genre
+        printf("\t\t|| [6] List movies' full movie  ||\n"); // List all movies with detailed info
+        printf("\t\t|| [7] List actors              ||\n"); // Lists all actors
+        printf("\t\t|| [8] List movies of an actor  ||\n"); // Lists the movies of an actor
+        printf("\t\t|| [9] List actors' full info   ||\n"); // Lists all actors with detailed info
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [R] Return to user selection ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t==================================\n");
+        fflush(stdin);
+        printf("\t\tSelect an option:");
+        op=getch();
+        switch (op) {
+            case '1':
+                if (num_cinemas==0) no_cinemas();
+                else list_cinemas();
+                pressanykey();
+                break;
+            case '2':
+                if (num_movies==0) no_movies();
+                else list_movies();
+                pressanykey();
+                break;
+            case '3':
+                if (num_movies==0) no_movies();
+                else if (num_cinemas==0) no_cinemas();
+                else list_movies_of_cinema();
+                pressanykey();
+                break;
+            case '4':
+                if (num_movies==0) no_movies();
+                else if (num_cinemas==0) no_cinemas();
+                else list_cinemas_of_movie();
+                pressanykey();
+                break;
+            case '5':
+                if (num_movies==0) no_movies();
+                else if (num_genres==0) no_genres();
+                else list_movies_by_genre();
+                pressanykey();
+                break;
+            case '6':
+                if (num_movies==0) no_movies();
+                else list_full_movies_info();
+                pressanykey();
+                break;
+            case '7':
+                if (num_actors==0) no_actors();
+                else list_actors();
+                pressanykey();
+                break;
+            case '8':
+                if (num_movies==0) no_movies();
+                else if (num_actors==0) no_actors();
+                else list_movies_of_actor();
+                pressanykey();
+                break;
+            case '9':
+                if (num_actors==0) no_actors();
+                else list_full_actors_info();
+                pressanykey();
+                break;
+            case 'r':
+            case 'R':
+                break;
+            default:
+                invalid_selection();
+                pressanykey();
+        }
+    }  while (op!='r' && op!='R');
+}
+
+void admin_menu() // Administrator sub-menu
+{
+    char op;
+    do {
+        menu_title();
+        printf("\t\t==================================\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [1] Manage cinemas           ||\n"); // Displays cinema sub-menu
+        printf("\t\t|| [2] Manage movies            ||\n"); // Displays movies sub-menu
+        printf("\t\t|| [3] Manage actors            ||\n"); // Displays actors sub-menu
+        printf("\t\t|| [4] Manage movie genres      ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [8] Load databases           ||\n"); // Loads databases of cinemas,movies,actors,genres
+        printf("\t\t|| [9] Save databases           ||\n"); // Saves databases of cinemas,movies,actors,genres
+        printf("\t\t|| [0] Change password          ||\n");
+        printf("\t\t|| [R] Return to user selection ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t==================================\n");
+        fflush(stdin);
+        printf("\t\tSelect an option:");
+        op=getch();
+        switch (op) {
+            case '1':
+                cinemas_menu(); // Shows cinemas sub-menu
+                break;
+            case '2':
+                movies_menu();  // Shows movies sub-menu
+                break;
+            case '3':
+                actors_menu(); // Shows actors sub-menu
+                break;
+            case '4':
+                genres_menu();  // Shows genres sub-menu
+                break;
+            case '8':   // Load both movies and actors from the txt files
+                load_cinemas_from_file();
+                load_movies_from_file();
+                load_actors_from_file();
+                load_genres_from_file();
+                pressanykey();
+                break;
+            case '9':   // Calls the save database function
+                save_db();
+                break;
+            case '0':
+                change_pass(); // Allows the admin to change the admin password
+                break;
+            case 'r':
+            case 'R':
+                break;
+            default:
+                invalid_selection();
+                pressanykey();
+        }
+    }  while (op!='r' && op!='R');
+}
+
+void cinemas_menu()  // Cinemas sub-menu
+{
+    char op;
+    do {
+        menu_title();
+        printf("\t\t==================================\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [1] Create cinema            ||\n"); // Create a new cinema
+        printf("\t\t|| [2] Edit cinema              ||\n"); // Edit a cinema
+        printf("\t\t|| [3] Delete cinema            ||\n"); // Delete a cinema
+        printf("\t\t|| [4] List cinemas             ||\n"); // Lists all the cinemas
+        printf("\t\t|| [5] List movies of a cinema  ||\n"); // Lists all movies of one cinema
+        printf("\t\t|| [6] List cinemas for a movie ||\n"); // Lists the cinemas a movie is played in
+        printf("\t\t|| [7] Associate cinemas/movies ||\n"); // Associates movies and cinemas
+        printf("\t\t|| [8] Load cinemas data        ||\n"); // Loads cinemas data from cinemas.txt
+        printf("\t\t|| [9] Save cinemas data        ||\n"); // Saves cinemas data to cinemas.txt
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [R] Return to menu           ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t==================================\n");
+        fflush(stdin);
+        printf("\t\tSelect an option:");
+        op=getch();
+        switch (op) {
+            case '1':
+                create_cinema(&vec_cinemas[num_cinemas]);
+                pressanykey();
+                break;
+            case '2':
+                if (num_cinemas==0) no_cinemas();            // if number of cinemas is 0, display error message, else call the edit function
+                else edit_cinema(&vec_cinemas[num_cinemas]);
+                pressanykey();
+                break;
+            case '3':
+                if (num_cinemas==0) no_cinemas();            // if number of cinemas is 0, display error message, else call the delete function
+                else delete_cinema(&vec_cinemas[num_cinemas]);
+                pressanykey();
+                break;
+            case '4':
+                if (num_cinemas==0) no_cinemas();
+                else list_cinemas();
+                pressanykey();
+                break;
+            case '5':
+                if (num_movies==0) no_movies();
+                else if (num_cinemas==0) no_cinemas();
+                else list_movies_of_cinema();
+                pressanykey();
+                break;
+            case '6':
+                if (num_movies==0) no_movies();
+                else if (num_cinemas==0) no_cinemas();
+                else list_cinemas_of_movie();
+                pressanykey();
+                break;
+            case '7':
+                if (num_movies==0) no_movies();
+                else if (num_cinemas==0) no_cinemas();
+                else associate_movies_and_cinemas();
+                pressanykey();
+                break;
+            case '8':
+                load_cinemas_from_file();
+                pressanykey();
+                break;
+            case '9':
+                if (num_cinemas==0) no_cinemas();
+                else save_cinemas_to_file();
+                pressanykey();
+                break;
+            case 'r':
+            case 'R':
+                break;
+            default:
+                invalid_selection();
+                pressanykey();
+        }
+    }  while (op!='r' && op!='R');
+}
+
+void movies_menu()      // Movies sub-menu
+{
+    char op;
+    do {
+        menu_title();
+        printf("\t\t==================================\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [1] New movie                ||\n"); // Creates new movie
+        printf("\t\t|| [2] Edit movie               ||\n"); // Edits existing movie
+        printf("\t\t|| [3] Delete movie             ||\n"); // Deletes existing movie
+        printf("\t\t|| [4] Associate movies/actors  ||\n"); // Associates movies and actors
+        printf("\t\t|| [5] Associate movies/cinemas ||\n"); // Associates movies and cinemas
+        printf("\t\t|| [6] List movies              ||\n"); // Lists all movies
+        printf("\t\t|| [7] List movies with info    ||\n"); // Lists the movies with detailed info
+        printf("\t\t|| [8] Load movies data         ||\n"); // Loads movies data from movies.txt
+        printf("\t\t|| [9] Save movies data         ||\n"); // Saves movies data to movies.txt
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [R] Return to menu           ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t==================================\n");
+        fflush(stdin);
+        printf("\t\tSelect an option:");
+        op=getch();         //scanf(" %c", &op);  <= instead of this, to not have to press enter
+        switch (op) {
+            case '1':
+                create_movie(&vec_movies[num_movies]);
+                pressanykey();
+                break;
+            case '2':
+                if (num_movies==0) no_movies();            // if number of movies is 0, display error message, else call the edit function
+                else edit_movie(&vec_movies[num_movies]);
+                pressanykey();
+                break;
+            case '3':
+                if (num_movies==0) no_movies();            // if number of movies is 0, display error message, else call the delete function
+                else delete_movie(&vec_movies[num_movies]);
+                pressanykey();
+                break;
+            case '4':
+                if (num_actors==0) no_actors();
+                else if (num_movies==0) no_movies();
+                else associate_actors_and_movies(&vec_actors[num_actors]);
+                pressanykey();
+                break;
+            case '5':
+                if (num_movies==0) no_movies();
+                else if (num_cinemas==0) no_cinemas();
+                else associate_movies_and_cinemas();
+                pressanykey();
+                break;
+            case '6':
+                if (num_movies==0) no_movies();            // if number of movies is 0, display error message, else call the list function
+                else list_movies();
+                pressanykey();
+                break;
+            case '7':
+                if (num_movies==0) no_movies();            // if number of movies is 0, display error message, else call the list full info function
+                else list_full_movies_info();
+                pressanykey();
+                break;
+            case '8':
+                load_movies_from_file();            // Load movies from text file
+                pressanykey();
+                break;
+            case '9':
+                if (num_movies==0) no_movies();            // if number of movies is 0, display error message, else call the save function
+                else save_movies_to_file();
+                pressanykey();
+                break;
+            case 'r':
+            case 'R':
+                break;
+            default:
+                invalid_selection();
+                pressanykey();
+        }
+    }  while (op!='r' && op!='R');
+}
+
+void actors_menu()      // Actors sub-menu
+{
+    char op;
+    do {
+        menu_title();
+        printf("\t\t==================================\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [1] New actor                ||\n");  // Creates new actor
+        printf("\t\t|| [2] Edit actor               ||\n");  // Edits existing actor
+        printf("\t\t|| [3] Delete actor             ||\n");  // Deletes existing actor
+        printf("\t\t|| [4] Associate actors/movies  ||\n");  // Associates three actors to a movie
+        printf("\t\t|| [5] List actors              ||\n");  // Lists all the actors
+        printf("\t\t|| [6] List actors with info    ||\n");  // Lists all the actors with their extra info
+        printf("\t\t|| [7] List movies of an actor  ||\n");  // Lists the movies of one actor
+        printf("\t\t|| [8] Load actors data         ||\n");  // Loads actors data from actors.txt
+        printf("\t\t|| [9] Save actors data         ||\n");  // Saves all actors data to actors.txt
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [R] Return to menu           ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t==================================\n");
+        fflush(stdin);
+        printf("\t\tSelect an option:");
+        op=getch();         //scanf(" %c", &op);  <= instead of this, to not have to press enter
+        switch (op) {
+            case '1':
+                create_actor(&vec_actors[num_actors]);
+                pressanykey();
+                break;
+            case '2':
+                if (num_actors==0) no_actors();             // if number of actors is 0, display error message, else call the edit function
+                else edit_actor(&vec_actors[num_actors]);
+                pressanykey();
+                break;
+            case '3':
+                if (num_actors==0) no_actors();             // if number of actors is 0, display error message, else call the edit function
+                else delete_actor(&vec_actors[num_actors]);
+                pressanykey();
+                break;
+            case '4':
+                if (num_actors==0) no_actors();
+                else if (num_movies==0) no_movies();
+                else associate_actors_and_movies(&vec_actors[num_actors]);
+                pressanykey();
+                break;
+            case '5':
+                if (num_actors==0) no_actors();             // if number of actors is 0, display error message, else call the list function
+                else list_actors();
+                pressanykey();
+                break;
+            case '6':
+                if (num_actors==0) no_actors();             // if number of actors is 0, display error message, else call the list function
+                else list_full_actors_info();
+                pressanykey();
+                break;
+            case '7':
+                if (num_actors==0) no_actors();
+                else list_movies_of_actor();
+                pressanykey();
+                break;
+            case '8':
+                load_actors_from_file();            // Load actors from text file
+                pressanykey();
+                break;
+            case '9':
+                if (num_actors==0) no_actors();         // if number of actors is 0, display error message, else call the save function
+                else save_actors_to_file();
+                pressanykey();
+                break;
+            case 'r':
+            case 'R':
+                break;
+            default:
+                invalid_selection();
+                pressanykey();
+        }
+    }  while (op!='r' && op!='R');
+}
+
+void genres_menu()      // Genres sub-menu
+{
+    char op;
+    do {
+        menu_title();
+        printf("\t\t==================================\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [1] New genre                ||\n");  // Creates new movie genre
+        printf("\t\t|| [2] Edit genre               ||\n");  // Edits existing genre
+        printf("\t\t|| [3] Delete genre             ||\n");  // Deletes existing actor
+        printf("\t\t|| [4] List genres              ||\n");  // Lists all the genres
+        printf("\t\t|| [5] List movies by genre     ||\n");  // Lists movies of a genre that the user selects and the cinemas they are played in
+        printf("\t\t||                              ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [8] Load genres data         ||\n");  // Loads genres data from genres.txt
+        printf("\t\t|| [9] Save genres data         ||\n");  // Saves genres data to genres.txt
+        printf("\t\t||                              ||\n");
+        printf("\t\t|| [R] Return to menu           ||\n");
+        printf("\t\t||                              ||\n");
+        printf("\t\t==================================\n");
+        fflush(stdin);
+        printf("\t\tSelect an option:");
+        op=getch();         //scanf(" %c", &op);  <= instead of this, to not have to press enter
+        switch (op) {
+            case '1':
+                create_genre();
+                pressanykey();
+                break;
+            case '2':
+                if (num_genres==0) no_genres();             // if number of genres is 0, display error message, else call the edit function
+                else edit_genre();
+                pressanykey();
+                break;
+            case '3':
+                if (num_genres==0) no_genres();             // if number of genres is 0, display error message, else call the delete function
+                else delete_genre();
+                pressanykey();
+                break;
+            case '4':
+                if (num_genres==0) no_genres();             // if number of genres is 0, display error message, else call the list function
+                else list_genres();
+                pressanykey();
+                break;
+            case '5':
+                if (num_genres==0) no_genres();
+                else if (num_movies==0) no_movies();
+                else list_movies_by_genre();
+                pressanykey();
+                break;
+            case '8':
+                load_genres_from_file();                // Load genres from text file
+                pressanykey();
+                break;
+            case '9':
+                if (num_genres==0) no_genres();
+                else save_genres_to_file();
+                pressanykey();
+                break;
+            case 'r':
+            case 'R':
+                break;
+            default:
+                invalid_selection();
+                pressanykey();
+        }
+    }  while (op!='r' && op!='R');
+}
+
+void admin_pass() // Asks for admin password, calls the admin menu if correct, else displays error message
+{
+    char pw[20],c=' ';
+    int i=0;
+    printf("\n\t\tEnter the password: ");
+    while (i<=20) {             // Loop to display asterisks when typing the password. taken from http://codingstreet.com/c-code-to-hide-input-password/
+        pw[i]=getch();
+        c=pw[i];
+        if (c==13) break;
+        else printf("*");
+        i++;
+    }
+    pw[i]='\0';
+    if (strcmp(pw, "nikos") == 0 || strcmp(pw,def_pw) == 0) admin_menu();
+    else {
+        printf("\n\t\tWrong password! Access denied.");
+        pressanykey();
+    }
+}
+
+void change_pass() // Changes the admin pass, it asks twice for confirmation
+{
+    char pw1[20], c1=' ';
+    char pw2[20], c2=' ';
+    int i=0;
+    printf("\n\t\tEnter the new password (max 20 chars): ");
+    while (i<=19) {             // Loop to display asterisks when typing the password. taken from http://codingstreet.com/c-code-to-hide-input-password/
+        pw1[i]=getch();
+        c1=pw1[i];
+        if (c1==13) break;
+        else printf("*");
+        i++;
+    }
+    pw1[i]='\0';
+    i=0;
+    printf("\n\t\tConfirm the new password (max 20 chars): ");
+    while (i<=19) {             // Loop to display asterisks when typing the password. taken from http://codingstreet.com/c-code-to-hide-input-password/
+        pw2[i]=getch();
+        c2=pw2[i];
+        if (c2==13) break;
+        else printf("*");
+        i++;
+    }
+    pw2[i]='\0';
+    if (strcmp(pw1,pw2) == 0) {
+        strcpy(def_pw,pw1);
+        save_pass();
+        printf("\n\t\tPassword changed!");
+        pressanykey();
+    }
+    else {
+        printf("\n\t\tPasswords don't match!");
+        pressanykey();
+    }
+}
+
+void save_pass() // Saves to file topsecret.dat the admin password. Used a very simple 'encryption' trick.
+{
+    int i,len;
+    len=strlen(def_pw);
+    char pw[len];
+    for (i=0; i<len;i++) {  // Small loop to convert and 'encrypt' the password
+        pw[i] = def_pw[i]+22;
+    }
+    FILE * fp;
+    fp = fopen(pwfile, "wb");
+    if (fp != NULL) {
+        fwrite(pw,sizeof(pw),1,fp);
+    }
+    fclose(fp);
+}
+
+void load_pass() // Loads from file topsecret.dat the admin password
+{
+    int i,len;
+    FILE * fp;
+    fp = fopen(pwfile, "rb");
+    if (fp != NULL) {
+        fread(def_pw,sizeof(def_pw),1,fp);
+        }
+    fclose(fp);
+    len=strlen(def_pw);
+    for (i=0; i<len;i++) {  // Small loop to convert and 'decrypt' the password
+        def_pw[i] = def_pw[i]-22;
+    }
+}
+
+void create_cinema(struct cinema * m) // Creates a new movie genre
+{
+    int i=0,cnt=0;
+    m->c_index=num_cinemas+1;
+    menu_title();
+    printf("\t\tCreate a new cinema\n");
+    printf("\t\t==================================\n");
+    printf("\t\tCinema name: ");
+    gets(m->c_name);
+    for (i=0;i<num_cinemas;i++) {        // Checks if the cinema already exists, if yes, display message and reduce num_cinemas
+        if (strcmp(vec_cinemas[i].c_name, vec_cinemas[num_cinemas].c_name) == 0) {
+            printf("\n\t\tCinema already exists!");
+            cnt++;
+        }
+    }
+    if (cnt==0) {
+        printf("\n\t\tCinema created!");
+        num_cinemas++;
+    }
+}
+
+void edit_cinema(struct cinema * m)  // Edit an existing cinema that the user selects
+{
+    int i,j,ac,cnt=0;
+    char ct[NAME_SIZE];                                // char array used to temporary store the name of the selected cinema
+    char tg[NAME_SIZE];                                // char array used to temporary store the new name entered and use it to compare to existing entries for duplicate checks
+    list_cinemas();                                    // Calls function to list the cinemas
+    printf("\t\tSelect cinema to edit (1-%d): ",num_cinemas);   // Prompts to press a key from 1 to number of cinemas
+    scanf(" %d",&i);
+    if (i>0 && i<=num_cinemas) {                       // Checks if the option is valid
+        strcpy(ct,vec_cinemas[i-1].c_name);            // Copies cinema's name to temporary char array, just to display in messages
+        fflush(stdin);
+        printf("\t\tAre you sure you want to edit '%s'? (Y/N)",ct);   // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') {
+            i--;                                        // Decrease i by 1 to match the correct array position
+            printf("\n\t\tOld name: %s\n", vec_cinemas[i].c_name);
+            printf("\t\tNew name: ");
+            gets(tg);                                   // stores the new name to temporary array
+            for (j=0;j<num_cinemas;j++) {
+                if ((strcmp(tg,vec_cinemas[j].c_name) ==0) && (strcmp(tg,ct) != 0)) cnt++; // if new name is found in other entries and is different than the current name, then increase the counter
+            }
+            if (cnt>0) {                    // if the counter is bigger than zero, then a duplicate entry was found, a message is displayed and nothing is changed
+                printf("\n\t\tCinema '%s' already exists!",tg);
+                no_changes();
+            }
+            else if (cnt==0) {              // if the counter is zero, the temporary cinema name is copied on the place of the cinema name we selected
+                strcpy(vec_cinemas[i].c_name,tg);
+                printf("\n\t\tCinema '%s' changed to '%s'!",ct,tg);
+            }
+        }
+        else if (ac=='N' || ac=='n') no_changes();
+        else invalid_selection();
+    }
+    else invalid_selection();
+}
+
+void delete_cinema(struct cinema * m)   // Deletes a cinema that the user selects
+{
+    int i,idx;
+    list_cinemas();                                               // Calls function to list the cinemas
+    printf("\t\tSelect a cinema to delete (1-%d): ",num_cinemas); // Prompts to press a key from 1 to number of cinemas
+    scanf(" %d",&idx);
+    if (idx>0 && idx<=num_cinemas) {                              // Checks if the option is valid
+        idx=idx-1;                                                // Decrease idx by 1 to match the correct array position
+        for (i=idx;i<num_cinemas;i++) {                           // This loop moves the cinemas, after the one we want to delete, one position to the left, essentially overwriting it.
+            vec_cinemas[i]=vec_cinemas[i+1];
+            vec_cinemas[i].c_index=vec_cinemas[i].c_index-1;      // Decrease the index number by 1, since we deleted one cinema.
+        }
+        num_cinemas--;                                            // Decrease the number of cinemas by 1, since we deleted one cinema.
+        printf("\n\t\tCinema deleted!");
+    }
+    else invalid_selection();
+}
+
+void list_cinemas() // Lists all the cinemas
+{
+    int i;
+    menu_title();
+    printf("\t\tList of cinemas:\n");
+    printf("\t\t==================================\n");
+    for (i=0;i<num_cinemas;i++)
+        printf("\t\t%d. %s \n",i+1,vec_cinemas[i].c_name);
+    printf("\t\t==================================\n");
+}
+
+void list_movies_of_cinema()  // Prompts the user to select a cinema and displays the movies played in it
+{
+    int i=0,cin=0;
+    list_cinemas();
+    printf("\t\tSelect the cinema (1-%d): ",num_cinemas);
+    scanf(" %d",&cin);
+    if (cin>0 && cin<=num_cinemas) {
+        printf("\n\t\tMovies available in %s: ",vec_cinemas[cin-1].c_name);
+        printf("\n\t\t==================================\n");
+        while (strcmp(vec_cinemas[cin-1].movies[i],"\0") != 0) {
+            printf("\t\t%d. %s\n",i+1,vec_cinemas[cin-1].movies[i]);
+            i++;
+        }
+    }
+    else invalid_selection();
+}
+
+void list_cinemas_of_movie() // Prompts the user to select a movie and displays the cinemas the movie is available in
+{
+    int i=0,j=0,mov,cnt=0;
+    list_movies();
+    printf("\t\tSelect the movie (1-%d): ",num_movies);
+    scanf("%d",&mov);
+    if (mov>0 && mov<=num_movies) {             // Checks if input is valid
+        printf("\n\t\t'%s' is available in: ",vec_movies[mov-1].m_title);
+        for (i=0;i<num_cinemas;i++) {
+            for (j=0;j<vec_cinemas[i].movies_num;j++) {
+                if (strcmp(vec_movies[mov-1].m_title,vec_cinemas[i].movies[j]) == 0) {
+                    printf("\n\t\t%d. %s",++cnt,vec_cinemas[i].c_name);
+                }
+            }
+        }
+    }
+    else invalid_selection();
+}
+
+void list_movies_by_genre() // Lists the movie genres, prompts the user to select a genre, then lists the movies of that genre and the cinemas they are available in
+{
+    int i,j,h,g,cnt=0;
+    list_genres();
+    printf("\t\tSelect a genre (1-%d): ",num_genres);
+    scanf("%d",&g);
+    if (g>0 && g<=num_genres) {                            // Checks if the input is valid
+        menu_title();
+        printf("\n\t\t%s movies available:",genres[g-1]);
+        printf("\n\t\t==================================");
+        for (i=0;i<num_movies;i++) {
+            if (strcmp(genres[g-1], vec_movies[i].genre) == 0) {
+                printf("\n\t\t%d. %s ",++cnt,vec_movies[i].m_title);
+                printf("\n\t\t----------------------------------");
+                printf("\n\t\t   Avalaible in the cinemas:");
+                for (j=0;j<num_cinemas;j++) {
+                    for (h=0;h<vec_cinemas[j].movies_num;h++) {
+                        if (strcmp(vec_movies[i].m_title,vec_cinemas[j].movies[h]) == 0) {
+                            printf("\n\t\t   %s",vec_cinemas[j].c_name);
+                        }
+                    }
+                }
+                printf("\n\t\t==================================");
+            }
+        }
+    }
+    else invalid_selection();
+}
+
+void associate_movies_and_cinemas() // Associates movies to cinemas, by prompting for the user to first select the cinema, then the movies
+{
+    int i=0,k=0,mov,cin;
+    list_cinemas();
+    printf("\t\tSelect the cinema (1-%d): ",num_cinemas);
+    scanf("%d",&cin);
+    if (cin>0 && cin<=num_cinemas) {
+        list_movies();
+        printf("\n\t\tHow many movies you want to associate?: ");
+        scanf(" %d",&k);
+        vec_cinemas[cin-1].movies_num=k;
+        for (i=0;i<k;i++) {
+            printf("\t\tSelect a movie (1-%d): ",num_movies);
+            scanf("%d",&mov);
+            strcpy(vec_cinemas[cin-1].movies[i],vec_movies[mov-1].m_title);
+        }
+        strcpy(vec_cinemas[cin-1].movies[i],"\0");
+    }
+    else invalid_selection();
+}
+
+void save_cinemas_to_file()
+{
+    char ac;
+    printf("\n\n\t\tAre you sure you want to save cinemas? (Y/N)"); // Asks for user confirmation
+    ac=getch();
+    if (ac=='Y' || ac=='y') {
+        FILE * fp;
+        int i=0,j=0;
+        fp = fopen(cinemas_file, "w");
+        if (fp != NULL) {
+            fprintf(fp,"Cinemas: %d\n",num_cinemas);   // Saves in the first line of the file the number of cinemas
+            for (i=0; i<num_cinemas; i++) {            // A loop to save all the cinema entries
+                fprintf(fp,"Cinema: %s\n", vec_cinemas[i].c_name);  // Saves cinema name
+                fprintf(fp,"Movies: %d\n", vec_cinemas[i].movies_num);  // Saves number of movies for the cinema
+                j=0;
+                while (strcmp(vec_cinemas[i].movies[j],"\0") != 0) {    // Loop to save all the movies of the cinema, till it finds the end of the array
+                    fprintf(fp,"%s\n", vec_cinemas[i].movies[j]);
+                    j++;
+                }
+            }
+        }
+        fclose(fp);
+        printf("\n\n\t\tCinemas data saved!");
+    }
+    else if (ac=='N' || ac=='n') printf("\n\t\tCinemas data not saved!");
+    else invalid_selection();
+}
+
+void load_cinemas_from_file() // Checks the number of cinemas in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+{
+    if (num_cinemas>0) {
+        char ac;
+        printf("\n\t\tThere are cinemas in the memory!");
+        printf("\n\t\tAre you sure you want to load? (Y/N)"); // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') load_cinemas_from_file2();
+        else if (ac=='N' || ac=='n') printf("\n\t\tCinemas not loaded!");
+        else invalid_selection();
+    }
+    else if (num_actors==0) load_cinemas_from_file2();
+}
+
+void load_cinemas_from_file2()
+{
+    FILE * fp;
+    int i=0,j=0;
+    char line[NAME_SIZE];
+    num_cinemas=0;
+    fp = fopen(cinemas_file, "r");
+    if (fp != NULL) {
+        fscanf(fp,"%*s %d\n", &num_cinemas);     // Reads the total number of cinemas
+        for (i=0; i<num_cinemas; i++) {
+            fgets(line,sizeof(line),fp);
+            line[strlen(line)-1]=0;
+            strcpy(vec_cinemas[i].c_name, &line[8]);
+            fscanf(fp,"%*s %d\n", &vec_cinemas[i].movies_num);  // Reads the total number of movies of the cinema
+            for (j=0;j<vec_cinemas[i].movies_num;j++) {
+                fgets(line,sizeof(line),fp);
+                line[strlen(line)-1]=0;
+                strcpy(vec_cinemas[i].movies[j], &line[0]);
+            }
+        }
+        fclose(fp);
+    }
+    printf("\n\t\tCinemas data loaded!");
+}
+
+void create_movie(struct movie * m)  // Create a new movie entry
+{
+    int i=0,cnt=0;
+    m->m_index=num_movies+1;        // Generate an index for the entry
+    menu_title();
+    printf("\t\tCreate a new movie\n");
+    printf("\t\t==================================\n");
+    printf("\t\tTitle: ");
+    gets(m->m_title);
+    for (i=0;i<num_movies;i++) {        // Checks if the movie already exists, if yes, dipslay message and reduce num_movies
+        if (strcmp(vec_movies[i].m_title, vec_movies[num_movies].m_title) == 0) {
+            printf("\n\t\tMovie already exists! Use edit option.");
+            cnt++;
+        }
+    }
+    if (cnt==0) {
+        printf("\t\tDirector: ");
+        gets(m->director);
+        printf("\t\tGenre: ");
+        gets(m->genre);
+        printf("\t\tDuration (in mins): ");
+        gets(m->duration);
+        printf("\t\tMinimum age required: ");
+        gets(m->min_age);
+        printf("\n\t\tMovie created!");
+        num_movies++;
+    }
+}
+
+void edit_movie(struct movie * m)  // Edit an existing movie that the user selects
+{
+    int i,j,ac,cnt=0;
+    char ct[NAME_SIZE];                                        // char array used to temporary store the title of the selected movie
+    char tg[NAME_SIZE];                                        // char array used to temporary store the new name entered and use it to compare to existing entries for duplicate checks
+    list_movies();                                             // Calls function to list the movies
+    printf("\t\tSelect movie to edit (1-%d): ",num_movies);    // Prompts to press a key from 1 to number of movies
+    scanf(" %d",&i);
+    if (i>0 && i<=num_movies) {                                // Checks if the option is valid
+        strcpy(ct,vec_movies[i-1].m_title);                    // Copy title of the selected movie to temporary char array, just to display it in messages.
+        fflush(stdin);
+        printf("\t\tAre you sure you want to edit the movie: \n\t\t'%s'? (Y/N)",ct);  // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') {
+            i--;                                             // Decrease idx by 1 to match the correct array position
+            printf("\n\t\tOld title: %s\n", vec_movies[i].m_title);     // Display old title
+            printf("\t\tNew title: ");
+            gets(tg);                                // Reads new title
+            for (j=0;j<num_movies;j++) {
+                if ((strcmp(tg,vec_movies[j].m_title) == 0) && (strcmp(tg,ct) != 0)) cnt++; // if new name is found in other entries and is different than the current name, then increase the counter
+            }
+            if (cnt>0) {                    // if the counter is bigger than zero, then a duplicate entry was found, a message is displayed and nothing is changed
+                printf("\n\t\tMovie '%s' already exists!",tg);
+                no_changes();
+            }
+            else if (cnt==0) {              // if the counter is zero, the temporary movie name is copied on the place of the movie name we selected
+                strcpy(vec_movies[i].m_title,tg);
+                printf("\t\tOld director: %s\n", vec_movies[i].director);   // Display old director
+                printf("\t\tNew director: ");
+                gets(vec_movies[i].director);                               // Reads new director
+                printf("\t\tOld genre: %s\n", vec_movies[i].genre);         // Display old genre
+                printf("\t\tNew genre: ");
+                gets(vec_movies[i].genre);                                  // Read new genre
+                printf("\t\tOld duration: %s mins\n", vec_movies[i].duration);    // Display old duration
+                printf("\t\tNew duration (in mins): ");
+                gets(vec_movies[i].duration);                               // Read new duration
+                printf("\t\tOld minimum age required: %s\n", vec_movies[i].min_age);  // Display old minimum age
+                printf("\t\tNew minimum age required: ");
+                gets(vec_movies[i].min_age);                                // Read new minimum age
+                printf("\n\t\tMovie '%s' edited!",ct);
+            }
+        }
+        else if (ac=='N' || ac=='n') no_changes();
+        else invalid_selection();
+    }
+    else invalid_selection();
+}
+
+void delete_movie(struct movie * m)   // Delete a movie that the user selects
+{
+    int i,ac,idx;
+    char ct[NAME_SIZE];                                          // char array used to temporary store the name of the selected movie
+    list_movies();                                               // Calls function to list the movies
+    printf("\t\tSelect a movie to delete (1-%d): ",num_movies);  // Prompts to press a key from 1 to number of movies
+    scanf(" %d",&idx);
+    if (idx>0 && idx<=num_movies) {                              // Checks if the option is valid
+        strcpy(ct,vec_movies[idx-1].m_title);                    // copy title of the selected movie to temporary char array, just to display it in messages.
+        printf("\t\tAre you sure you want to delete the movie: \n\t\t'%s'? (Y/N)",ct);  // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') {
+            idx--;                                                   // Decrease idx by 1 to match the correct array position
+            for (i=idx;i<num_movies;i++) {                           // This loop moves the movies, after the one we want to delete, one position to the left, essentially overwriting it.
+                vec_movies[i]=vec_movies[i+1];
+                vec_movies[i].m_index=vec_movies[i].m_index-1;       // Decrease the index number by 1, since we deleted one movie.
+            }
+            num_movies--;                                            // Decrease the number of movies by 1, since we deleted one movie.
+            printf("\n\t\tMovie '%s' deleted!",ct);
+        }
+        else if (ac=='N' || ac=='n') no_changes();
+        else invalid_selection();
+    }
+    else invalid_selection();
+}
+
+void associate_actors_and_movies(struct actor * m)  // Associates three actors to a movie
+{
+    int mov,act,i,k;
+    list_movies();
+    printf("\t\tSelect the movie (1-%d): ",num_movies);
+    scanf("%d",&mov);
+    if (mov>0 && mov<=num_movies) {                      // Checks if the input is valid
+        list_actors();
+        printf("\t\tHow many actors you want to associate?: ");
+        scanf(" %d",&k);
+        vec_movies[mov-1].actors_num=k;
+        for (i=0;i<k;i++) {
+            printf("\t\tSelect an actor (1-%d): ",num_actors);
+            scanf(" %d",&act);
+            strcpy(vec_movies[mov-1].actors[i],vec_actors[act-1].a_name);
+        }
+    }
+    else invalid_selection();
+}
+
+void list_movies()      // List all the movies
+{
+    int i;
+    menu_title();
+    printf("\t\tList of movies:\n");
+    printf("\t\t==================================\n");
+    for (i=0; i<num_movies; i++)
+        print_movie(&vec_movies[i]);
+    printf("\t\t==================================\n");
+}
+
+void print_movie(struct movie * m)      // Print index and movie
+{
+    printf("\t\t%d. %s\n", m->m_index,m->m_title);
+}
+
+void list_full_movies_info()    // List all the movies with all their related data
+{
+    int i;
+    menu_title();
+    printf("\t\tDetailed list of movies:\n");
+    printf("\t\t==================================");
+    for (i=0; i<num_movies; i++)
+        print_full_movie_info(&vec_movies[i]);
+}
+
+void print_full_movie_info(struct movie * m)    // Print all the data of a movie entry
+{
+    int j=0;
+    printf("\n\t\tIndex: %d\n", m->m_index);
+    printf("\t\tTitle: %s\n", m->m_title);
+    printf("\t\tDirector: %s\n", m->director);
+    printf("\t\tGenre: %s\n", m->genre);
+    printf("\t\tDuration: %s mins\n", m->duration);
+    printf("\t\tMinimum Age: %s\n", m->min_age);
+    printf("\t\tActors: %s",m->actors[j]);
+    for (j=1;j<m->actors_num;j++) {
+        printf("\n\t\t\t%s",m->actors[j]);
+    }
+    printf("\n\t\t==================================");
+}
+
+void save_movies_to_file()      // Save the movie data to text file movies.txt
+{
+    char ac;
+    printf("\n\n\t\tAre you sure you want to save movies? (Y/N)"); // Asks for user confirmation
+    ac=getch();
+    if (ac=='Y' || ac=='y') {
+        FILE * fp;
+        int i,j;
+        fp = fopen(movies_file, "w");
+        if (fp != NULL) {
+            fprintf(fp,"movies: %d\n",num_movies);  // Saves in the first line of the file the total number of movies
+            for (i=0; i<num_movies; i++) {          // A loop to save all the movie entries
+                fprintf(fp,"Index: %d\n", vec_movies[i].m_index);
+                fprintf(fp,"Title: %s\n", vec_movies[i].m_title);
+                fprintf(fp,"Director: %s\n", vec_movies[i].director);
+                fprintf(fp,"Genre: %s\n", vec_movies[i].genre);
+                fprintf(fp,"Duration: %s\n", vec_movies[i].duration);
+                fprintf(fp,"Min Age: %s\n", vec_movies[i].min_age);
+                fprintf(fp,"Actors: %d\n",vec_movies[i].actors_num);
+                for (j=0;j<vec_movies[i].actors_num;j++) {
+                    fprintf(fp,"%s\n",vec_movies[i].actors[j]);
+                }
+            }
+            fclose(fp);
+        }
+        printf("\n\n\t\tMovies data saved!");
+    }
+    else if (ac=='N' || ac=='n') printf("\n\t\tMovies data not saved!");
+    else invalid_selection();
+}
+
+void load_movies_from_file() // Checks the number of movies in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+{
+    if (num_movies>0) {
+        char ac;
+        printf("\n\t\tThere are movies in the memory!");
+        printf("\n\t\tAre you sure you want to load? (Y/N)"); // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') load_movies_from_file2();
+        else if (ac=='N' || ac=='n') printf("\n\t\tMovies not loaded!");
+        else invalid_selection();
+    }
+    else if (num_movies==0) load_movies_from_file2();
+}
+
+void load_movies_from_file2()        // Load movie data from text file movies.txt
+{
+    FILE * fp;
+    int i=0,j=0;
+    char line[NAME_SIZE];
+    num_movies = 0;
+    fp = fopen(movies_file, "r");
+    if (fp != NULL) {
+        fscanf(fp,"%*s %d\n", &num_movies);     // Reads the total number of movies
+        for (i=0; i<num_movies; i++) {
+            fgets(line,sizeof(line),fp); 			// reads the index
+            line[strlen(line)-1]=0;
+            vec_movies[i].m_index=i+1;
+            fgets(line,sizeof(line),fp); 			// reads the title
+            line[strlen(line)-1]=0;
+            strcpy(vec_movies[i].m_title, &line[7]);
+            fgets(line,sizeof(line),fp); 			// reads the director
+            line[strlen(line)-1]=0;
+            strcpy(vec_movies[i].director, &line[10]);
+            fgets(line,sizeof(line),fp); 			// reads the genre
+            line[strlen(line)-1]=0;
+            strcpy(vec_movies[i].genre, &line[7]);
+            fgets(line,sizeof(line),fp); 			// reads the duration
+            line[strlen(line)-1]=0;
+            strcpy(vec_movies[i].duration, &line[10]);
+            fgets(line,sizeof(line),fp); 			// reads the minimum age
+            line[strlen(line)-1]=0;
+            strcpy(vec_movies[i].min_age, &line[9]);
+            fscanf(fp,"%*s %d\n", &vec_movies[i].actors_num);  // Reads the total number of movies of the cinema
+            for (j=0;j<vec_movies[i].actors_num;j++) {
+                fgets(line,sizeof(line),fp);
+                line[strlen(line)-1]=0;
+                strcpy(vec_movies[i].actors[j], &line[0]);
+            }
+        }
+        fclose(fp);
+    }
+    printf("\n\t\tMovies data loaded!");
+}
+
+void create_actor(struct actor * m) // Create a new actor entry
+{
+    int i=0,cnt=0;
+    m->a_index=num_actors+1;  // Generate an index for the entry
+    menu_title();
+    printf("\t\tCreate a new actor\n");
+    printf("\t\t==================================\n");
+    printf("\t\tName of the actor: ");
+    gets(m->a_name);
+    for (i=0;i<num_actors;i++) {        // Checks if the actor already exists, if yes, dipslay message and reduce num_actors
+        if (strcmp(vec_actors[i].a_name, vec_actors[num_actors].a_name) == 0) {
+            printf("\n\t\tActor already exists! Use edit option.");
+            cnt++;
+        }
+    }
+    if (cnt==0) {
+        printf("\t\tAge of the actor: ");
+        gets(m->a_age);
+        printf("\n\t\tActor created!");
+        num_actors++;
+    }
+}
+
+void edit_actor(struct actor * m)  // Edit an existing actor that the user selects
+{
+    int i,j,ac,cnt=0;
+    char ct[NAME_SIZE];                                        // char array used to temporary store the name of the selected actor
+    char tg[NAME_SIZE];                                        // char array used to temporary store the new name entered and use it to compare to existing entries for duplicate checks
+    list_actors();                                             // Calls function to list the actors
+    printf("\t\tSelect actor to edit (1-%d): ",num_actors);    // Prompts to press a key from 1 to number of actors
+    scanf(" %d",&i);
+    if (i>0 && i<=num_actors) {                                // Checks if the option is valid
+        strcpy(ct,vec_actors[i-1].a_name);                     // Copies actor's name to temporary char array, just to display in messages
+        fflush(stdin);
+        printf("\t\tAre you sure you want to edit %s? (Y/N)",ct);   // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') {
+            i--;                                                 // Decrease i by 1 to match the correct array position
+            printf("\n\t\tOld name: %s\n", vec_actors[i].a_name);
+            printf("\t\tNew name: ");
+            gets(tg);                                           // stores the new name to temporary array
+            for (j=0;j<num_actors;j++) {
+                if ((strcmp(tg,vec_actors[j].a_name) == 0) && (strcmp(tg,ct) != 0)) cnt++; // if new name is found in other entries and is different than the current name, then increase the counter
+            }
+            if (cnt>0) {                    // if the counter is bigger than zero, then a duplicate entry was found, a message is displayed and nothing is changed
+                printf("\n\t\tActor '%s' already exists!",tg);
+                no_changes();
+            }
+            else if (cnt==0) {              // if the counter is zero, the temporary actor name is copied on the place of the actor name we selected
+                strcpy(vec_actors[i].a_name,tg);
+                printf("\t\tOld age: %s\n", vec_actors[i].a_age);
+                printf("\t\tNew age: ");
+                gets(vec_actors[i].a_age);
+                printf("\n\t\tActor '%s' edited!",ct);
+            }
+        }
+        else if (ac=='N' || ac=='n') no_changes();
+        else invalid_selection();
+    }
+    else invalid_selection();
+}
+
+void delete_actor(struct actor * m)   // Deletes an actor that the user selects
+{
+    int i,idx,ac;
+    char ct[NAME_SIZE];                                           // char array used to temporary store the name of the selected actor
+    list_actors();                                                // Calls function to list the actors
+    printf("\t\tSelect an actor to delete (1-%d): ",num_actors);  // Prompts to press a key from 1 to number of actors
+    scanf(" %d",&idx);
+    if (idx>0 && idx<=num_actors) {                               // Checks if the option is valid
+        strcpy(ct,vec_actors[idx-1].a_name);                          // Copies actor's name to temporary char array, just to display in messages
+        printf("\t\tAre you sure you want to delete %s? (Y/N)",ct);   // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') {
+            idx--;                                                    // Decrease idx by 1 to match the correct array position
+            for (i=idx;i<num_actors;i++) {                            // This loop moves the actors, after the one we want to delete, one position to the left, essentially overwriting it.
+                vec_actors[i]=vec_actors[i+1];
+                vec_actors[i].a_index=vec_actors[i].a_index-1;        // Decrease the index number by 1, since we deleted one actor.
+            }
+            num_actors--;                                             // Decrease the number of actors by 1, since we deleted one actor.
+            printf("\n\t\t%s deleted!",ct);
+        }
+        else if (ac=='N' || ac=='n') no_changes();
+        else invalid_selection();
+    }
+    else invalid_selection();
+}
+
+void list_actors() // List of all the actors
+{
+    int i;
+    menu_title();
+    printf("\t\tList of actors:\n");
+    printf("\t\t==================================\n");
+    for (i=0; i<num_actors; i++)
+        print_actor(&vec_actors[i]);
+    printf("\t\t==================================\n");
+}
+
+void print_actor(struct actor * m) // Prints index and actor
+{
+    printf("\t\t%d. %s\n", m->a_index,m->a_name);
+}
+
+void list_full_actors_info() // Lists all the actors with all their related info, included their associated movies
+{
+    int i,j,h;
+    menu_title();
+    printf("\t\tList of actors:\n");
+    printf("\t\t==================================\n");
+    for (i=0; i<num_actors; i++) {
+        printf("\t\tIndex: %d\n", vec_actors[i].a_index);
+        printf("\t\tName: %s\n", vec_actors[i].a_name);
+        printf("\t\tAge: %s\n", vec_actors[i].a_age);
+        printf("\t\tMovies:");
+        for (j=0;j<num_movies;j++) {
+            for (h=0;h<vec_movies[j].actors_num;h++) {
+                if (strcmp(vec_actors[i].a_name, vec_movies[j].actors[h]) == 0)
+                    printf("\n\t\t%s ",vec_movies[j].m_title);
+            }
+        }
+        printf("\n\t\t==================================\n");
+    }
+}
+
+void list_movies_of_actor() // Prompts user to select actor, then it compares the selected actor to the actors saved in movies structure and displays the movies if they match
+{
+    int i=0,j=0,act=0,cnt=0;
+    list_actors();
+    printf("\t\tSelect the actor (1-%d): ",num_actors);
+    scanf("%d",&act);
+    if (act>0 && act<=num_actors) {                             // Checks if the input is valid
+        printf("\n\t\t%s played in:",vec_actors[act-1].a_name);
+        printf("\n\t\t==================================");
+        for (i=0;i<num_movies;i++) {
+            for (j=0;j<vec_movies[i].actors_num;j++) {
+                if (strcmp(vec_actors[act-1].a_name, vec_movies[i].actors[j]) == 0)
+                    printf("\n\t\t%d. %s",++cnt,vec_movies[i].m_title);
+            }
+        }
+        printf("\n\t\t==================================");
+    }
+    else invalid_selection();
+}
+
+void save_actors_to_file() // Save actors to txt file actors.txt
+{
+    char ac;
+    printf("\n\n\t\tAre you sure you want to save actors? (Y/N)");
+    ac=getch();
+    if (ac=='Y' || ac=='y') {
+        FILE * fp;
+        int i;
+        fp = fopen(actors_file, "w");
+        if (fp != NULL) {
+            fprintf(fp,"actors: %d\n",num_actors);
+            for (i=0; i<num_actors; i++) {
+                fprintf(fp,"Index: %d\n", vec_actors[i].a_index);
+                fprintf(fp,"Name: %s\n", vec_actors[i].a_name);
+                fprintf(fp,"Age: %s\n", vec_actors[i].a_age);
+            }
+            fclose(fp);
+        }
+        printf("\n\n\t\tActors data saved!");
+    }
+    else if (ac=='N' || ac=='n') printf("\n\t\tActors data not saved!");
+    else invalid_selection();
+}
+
+void load_actors_from_file() // Checks the number of actors in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+{
+    if (num_actors>0) {
+        char ac;
+        printf("\n\t\tThere are actors in the memory!");
+        printf("\n\t\tAre you sure you want to load? (Y/N)"); // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') load_actors_from_file2();
+        else if (ac=='N' || ac=='n') printf("\n\t\tActors not loaded!");
+        else invalid_selection();
+    }
+    else if (num_actors==0) load_actors_from_file2();
+}
+
+void load_actors_from_file2() //Load actors from txt file actors.txt
+{
+    FILE * fp;
+    int i=0;
+    char line[NAME_SIZE];
+    num_actors = 0;
+    fp = fopen(actors_file, "r");
+    if (fp != NULL) {
+        fscanf(fp,"%*s %d\n", &num_actors);
+        for (i=0; i<num_actors; i++) {
+            fgets(line,sizeof(line),fp); 			// reads the index
+            line[strlen(line)-1]=0;
+            vec_actors[i].a_index=i+1;
+            fgets(line,sizeof(line),fp); 			// reads the actor
+            line[strlen(line)-1]=0;
+            strcpy(vec_actors[i].a_name, &line[6]);
+            fgets(line,sizeof(line),fp); 			// reads the age
+            line[strlen(line)-1]=0;
+            strcpy(vec_actors[i].a_age, &line[5]);
+        }
+        fclose(fp);
+    }
+    printf("\n\t\tActors data loaded!");
+}
+
+void create_genre() // Creates a new movie genre
+{
+    int i=0,cnt=0;
+    menu_title();
+    printf("\t\tCreate a new movie genre\n");
+    printf("\t\t==================================\n");
+    printf("\t\tGenre: ");
+    gets(genres[num_genres]);
+    for (i=0;i<num_genres;i++) {        // Checks if the genre already exists, if yes, dipslay message and reduce num_movies
+        if (strcmp(genres[i], genres[num_genres]) == 0) {
+            printf("\n\t\tGenre already exists! Use edit option.");
+            cnt++;
+        }
+    }
+    if (cnt==0) {
+        printf("\n\t\tGenre created!");
+        num_genres++;
+    }
+}
+
+void edit_genre() // Lists all movie genres and prompts user to select which one to edit, then it scans the new input and saves it
+{
+    int i,j,ac,cnt=0;
+    char ct[NAME_SIZE];     // char array used to temporary store the name of the selected genre
+    char tg[NAME_SIZE];     // char array used to temporary store the new name entered and use it to compare to existing entries for duplicate checks
+    list_genres();
+    printf("\t\tSelect a genre to edit (1-%d): ",num_genres);
+    scanf("%d",&i);
+    if (i>0 && i<=num_genres) {                             // Checks if the input is valid
+        strcpy(ct,genres[i-1]);     // copy name of the selected genre to temporary char array, just to display it in messages.
+        fflush(stdin);
+        printf("\t\tAre you sure you want to edit genre '%s'? (Y/N)",ct);
+        ac=getch();
+        if (ac=='Y' || ac=='y') {
+            printf("\n\t\tOld genre: %s",ct);
+            printf("\n\t\tNew genre: ");
+            gets(tg);                           // stores the new genre to temporary array
+            for (j=0;j<num_genres;j++) {
+                if ((strcmp(tg,genres[j]) == 0) && (strcmp(tg,ct) != 0)) cnt++; // if new genre is found in other entries and is different than the current genre, then increase the counter
+            }
+            if (cnt>0) {            // if the counter is bigger than zero, then a duplicate entry was found, a message is displayed and nothing is changed
+                printf("\n\t\tGenre '%s' already exists!",tg);
+                no_changes();
+            }
+            else if (cnt==0) {      // if the counter is zero, we copy the temporary genre name on the place of the genre we selected
+                strcpy(genres[i-1],tg);
+                printf("\n\t\tGenre '%s' changed to '%s'!",ct,genres[i-1]);
+            }
+        }
+        else if (ac=='N' || ac=='n') no_changes();
+        else invalid_selection();
+    }
+    else invalid_selection();
+}
+
+void delete_genre() // Lists all movie genres and prompts user to select which one to delete, then it moves the array elements after the selection, one position to the left, deleting the selection
+{
+    int i,j,ac;
+    char ct[NAME_SIZE];     // char array used to temporary store the name of the selected genre
+    list_genres();
+    printf("\t\tSelect a genre to delete (1-%d): ",num_genres);
+    scanf("%d",&i);
+    if (i>0 && i<=num_genres) {     // Checks if the input is valid
+        strcpy(ct,genres[i-1]);     // copy name of the selected genre to temporary char array, just to display it in messages.
+        printf("\t\tAre you sure you want to delete genre '%s'? (Y/N)",ct);
+        ac=getch();
+        if (ac=='Y' || ac=='y') {
+            i--;
+            for (j=i;j<num_genres;j++) strcpy(genres[j],genres[j+1]);
+            num_genres--;  //Decreases the number of genres by 1, since we deleted an entry
+            printf("\n\t\tGenre '%s' deleted!",ct);
+        }
+        else if (ac=='N' || ac=='n') no_changes();
+        else invalid_selection();
+    }
+    else invalid_selection();
+}
+
+void list_genres() // Lists all the movie genres
+{
+    int i;
+    menu_title();
+    printf("\n\t\tList of genres:\n");
+    printf("\t\t==================================\n");
+    for (i=0;i<num_genres;i++) {
+        printf("\t\t%d. %s\n",i+1,genres[i]);
+    }
+    printf("\t\t==================================\n");
+}
+
+void save_genres_to_file() // Saves movies genres to txt file genres.txt
+{
+    char ac;
+    printf("\n\n\t\tAre you sure you want to save genres? (Y/N)"); // Asks for user confirmation
+    ac=getch();
+    if (ac=='Y' || ac=='y') {
+        FILE * fp;
+        int i;
+        fp = fopen(genres_file, "w");
+        if (fp != NULL) {
+            fprintf(fp,"Genres: %d\n",num_genres);
+            for (i=0; i<num_genres; i++) {
+                fprintf(fp,"%s\n", genres[i]);
+            }
+            fclose(fp);
+        }
+        printf("\n\n\t\tGenres data saved!");
+    }
+    else if (ac=='N' || ac=='n') printf("\n\t\tGenres data not saved!");
+    else invalid_selection();
+}
+
+void load_genres_from_file() // Checks the number of genres in the memory, if zero, it calls the load function, if >0 it asks for confirmation
+{
+    if (num_genres>0) {
+        char ac;
+        printf("\n\t\tThere are genres in the memory!");
+        printf("\n\t\tAre you sure you want to load? (Y/N)"); // Asks for user confirmation
+        ac=getch();
+        if (ac=='Y' || ac=='y') load_genres_from_file2();
+        else if (ac=='N' || ac=='n') printf("\n\t\tGenres not loaded!");
+        else invalid_selection();
+    }
+    else if (num_genres==0) load_genres_from_file2();
+}
+
+void load_genres_from_file2() // Loads movie genres from txt file genres.txt
+{
+    FILE * fp;
+    int i=0;
+    char line[NAME_SIZE];
+    num_genres = 0;
+    fp = fopen(genres_file, "r");
+    if (fp != NULL) {
+        fscanf(fp,"%*s %d\n", &num_genres);     // Reads the total number of genres
+        for (i=0; i<num_genres; i++) {
+            fgets(line,sizeof(line),fp); 			// reads the genre
+            line[strlen(line)-1]=0;
+            strcpy(genres[i], &line[0]);
+        }
+        fclose(fp);
+    }
+    printf("\n\t\tGenres data loaded!");
+}
+
+void save_db()  // Saves the database of actors, movies, genres and cinemas to txt files, doing checks if either are empty, to avoid overwriting our files with empty files
+{
+    if (num_cinemas==0 && num_movies==0 && num_actors==0 && num_genres==0) {
+        printf("\n\n\t\tNothing to save!");
+    }
+    else {
+        if (num_cinemas!=0) save_cinemas_to_file();
+            else no_cinemas();
+        if (num_movies!=0) save_movies_to_file();
+            else no_movies();
+        if (num_actors!=0) save_actors_to_file();
+            else no_actors();
+        if (num_genres!=0) save_genres_to_file();
+            else no_genres();
+    }
+}
+
+void invalid_selection()
+{
+    printf("\a\n\n\t\tInvalid selection!"); // Displays a message that an invalid selection was made
+}
+
+void pressanykey()  // Displays a message to press any key to continue and ...waits for any key to be pressed |)
+{
+    printf("\n\n\t\tPress any key to continue...");
+    getch();
+}
+
+void no_cinemas()  // Displays a message that there are no cinemas to display
+{
+    printf("\n\n\t\tThere are no cinemas in the database.");
+}
+
+void no_movies()  // Displays a message that there are no movies to display
+{
+    printf("\n\n\t\tThere are no movies in the database.");
+}
+
+void no_actors()  // Displays a message that there are no actors to display
+{
+    printf("\n\n\t\tThere are no actors in the database.");
+}
+
+void no_genres()  // Displays a message that there are no genre to display
+{
+    printf("\n\n\t\tThere are no genres in the database.");
+}
+
+void no_changes() // Displays a message that no changes were made.
+{
+    printf("\n\t\tNo changes were made!");
+}

@@ -1,0 +1,51 @@
+Changelog:
+
+01/02/2018, v0.99c
+- Changed the look of the menus, using extended ascii chars.
+- When creating or editing a new movie, a check for the genre was added. If the genre of the movie does not exist in the available genres, it gets added automatically to the available genres.
+- When creating or editing a cinema, movie, actor or genre, those fields can no longer be empty. The rest fields of the entries,if any, can be empty though.
+- Minor changes to the code.
+
+25/01/2018, v0.99b
+- Small fix in admin pass functions. Backspace can now be used to delete user input, as intended. Limited the available chars to alphanumeric chars and symbols only, when creating/changing the pass. (No more accepting space key, ESC,etc as chars). Still have weird behaviour with arrow keys and home/del/insert/end/pg up/pg down.
+- Fixed bug that was caused by the use of fgets(): It was storing the \n at the end of the strings. That was causing an extra empty line to be displayed on screen when listing stuff and also to be saved in the files. Made use of strcspn function to find the position of first(and only) occurence of \n in the string and remove it.
+
+22/01/2018, v0.99a
+- Changed all gets() to fgets() to limit the input to the available, cause bigger than NAME_SIZE inputs could lead to crashes in several functions. Used fflush(stdin) to discard the extra input before the next fgets.
+- Added duplicate checks to the association functions.
+- When associating movies to cinemas and actors to movies, the selections are added to the ones that had already been associated before, if any. Previously, it was just associating from scratch every time, overwriting any existing associations.
+- Added options to delete and edit associations, with duplicate checks,etc.
+- Added new Manage Associations menu, which is under the admin menu and contains all the associations related options.
+
+21/01/2018, v0.99
+- Major changes in the movies structure.
+- There is no limit anymore when assigning actors to movies: user can select the number of the actors and it can be different for each movie. That number is saved in the structure for use in other functions.
+- Adjusted several functions to work with the new structure of the movies. (save/load, associations, etc)~
+- Minor tweak in edit function to get rid of compiler warnings (using gets instead of scanf with subset). I now get 0 warnings.
+- Improved duplicate checks when creating cinemas, movies, actors, genres. 
+- Added duplicate checks when editing cinemas, movies, actors, genres. If duplicates are found in other entries, no changes are made. If the new name is same as the old or different(but not duplicate), it proceeds normally to the rest of the edit function.
+
+20/01/2018, v0.98
+- Major changes in the cinemas structure.  
+- Cinema names are no longer predefined. There are now options to create,edit and delete cinemas in the cinemas menu.
+- There is no limit anymore when assigning movies to cinemas: user can select the number of the movies and it can be different for each cinema. That number is saved in the structure for use in other functions.
+- Adjusted several functions to work with the new structure of the cinemas. (save/load, associations, etc)
+- Added question for user confirmation to all edit/delete functions.
+- Lots of small cosmetic changes, improvements to the displayed messages,etc.
+
+17/01/2018, v0.97
+- Added user selection menu as first screen. User menu has view-only options. Administrator menu has options to manage everything. There is also a load database option in user selection menu.
+- Added password protection for administrator menu. Default admin pass is ‘admin’ and there is a secret developer pass that can also be used to enter the admin menu (not so secret for you, it’s in the source code!).
+- Added option to change admin password. It accepts any char, including control chars. Max length 20 chars. Restriction: you can’t use backspace if you make a mistake, as it accepts it as a char too.
+- Added a small loop to display asterisks when typing passwords. 
+Loop taken from http://codingstreet.com/c-code-to-hide-input-password/
+- After changing default admin password, new password is saved in a binary file topsecret.dat and is loaded when you start again the program, making the default pass ‘admin’ to not work anymore. (the developer pass still works ofc). Added a little trick to ‘encrypt’ the password in the file, so it’s not directly readable.
+
+15/01/2018, v0.96: 
+- Fixed a bug in the list_cinemas_of_movie and list_movies_by_genre functions, by using strcmp function, to properly compare. 
+- Added a check if the new entries are duplicated. It only checks after entering all data of a movie or actor, not just the name, so it needs improvement.
+- Minor cosmetic changes (added my name under the program name on the menus, some changes in the messages, etc).
+- Added menu_title, invalid_selection functions to shorten the code a bit.
+- Added input validation for edit/delete genre functions.
+- Added confirmation question for save operations.
+- Added confirmation question for load operations, when there is already data in the memory. If there is no data, it doesn’t ask. Added some more comments in the source code.

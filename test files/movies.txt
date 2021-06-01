@@ -1,0 +1,141 @@
+movies: 14
+Index: 1
+Title: Star Wars: The Last Jedi
+Director: Rian Johnson
+Genre: Sci-fi
+Duration: 152
+Min Age: 13
+Actors: 3
+Daisy Ridley
+John Boyega
+Mark Hamill
+Index: 2
+Title: Jumanji: Welcome to the Jungle
+Director: Jake Kasdan
+Genre: Comedy
+Duration: 119
+Min Age: 12
+Actors: 3
+Dwayne Johnson
+Karen Gillan
+Kevin Hart
+Index: 3
+Title: Insidious: The Last Key
+Director: Adam Robitel
+Genre: Horror
+Duration: 103
+Min Age: 16
+Actors: 3
+Lin Shaye
+Leigh Whannell
+Angus Sampson
+Index: 4
+Title: The Greatest Snowman
+Director: Michael Gracey
+Genre: Musical
+Duration: 145
+Min Age: 12
+Actors: 3
+Hugh Jackman
+Michelle Williams
+Zac Efron
+Index: 5
+Title: Pitch Perfect 3
+Director: Trish Sie
+Genre: Comedy
+Duration: 93
+Min Age: 12
+Actors: 3
+Anna Kendrick
+Rebel Wilson
+Brittany Snow
+Index: 6
+Title: Ferdinand
+Director: Carlos Saldanha
+Genre: Animation
+Duration: 108
+Min Age: 6
+Actors: 3
+John Cena
+Kate McKinnon
+Bobby Cannavale
+Index: 7
+Title: Molly's Game
+Director: Aaron Sorkin
+Genre: Drama
+Duration: 140
+Min Age: 16
+Actors: 3
+Jessica Chastain
+Idris Elba
+Kevin Costner
+Index: 8
+Title: Darkest Hour
+Director: Joe Wright
+Genre: Drama
+Duration: 125
+Min Age: 12
+Actors: 3
+Gary Oldman
+Lily James
+Kristin Scott Thomas
+Index: 9
+Title: Coco
+Director: Lee Unkrich
+Genre: Animation
+Duration: 105
+Min Age: 6
+Actors: 3
+Anthony Gonzalez
+Gael Garcia Bernal
+Benjamin Bratt
+Index: 10
+Title: All the Money in the World
+Director: Ridley Scott
+Genre: Drama
+Duration: 132
+Min Age: 18
+Actors: 3
+Michelle Williams
+Christopher Plummer
+Mark Wahlberg
+Index: 11
+Title: The Post
+Director: Steven Spielberg
+Genre: Drama
+Duration: 116
+Min Age: 12
+Actors: 3
+Meryl Strip
+Tom Hanks
+Sarah Paulson
+Index: 12
+Title: The Commuter
+Director: Jaume Collet-Serra
+Genre: Action
+Duration: 105
+Min Age: 14
+Actors: 3
+Liam Neeson
+Vera Farmiga
+Patrick Wilson
+Index: 13
+Title: Paddington 2
+Director: Paul King
+Genre: Animation
+Duration: 104
+Min Age: 6
+Actors: 3
+Ben Whishaw
+Hugh Grant
+Hugh Bonneville
+Index: 14
+Title: Proud Mary
+Director: Babak Najafi
+Genre: Action
+Duration: 89
+Min Age: 18
+Actors: 3
+Taraji P. Henson
+Billy Brown
+Jahi Di'Allo Winston

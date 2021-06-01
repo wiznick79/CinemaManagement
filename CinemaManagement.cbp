@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="CinemaManagement" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option show_notes="0">
+			<notes>
+				<![CDATA[Todo list:
+DONE • Remove the limits of 4 movies per cinema and 3 actors per movie and change the associate functions.
+DONE • Improve the duplicate checks.
+DONE • Confirmations for edits/deletions.
+• Choose a genre from the existing ones when creating a movie.
+• Any char can be used for admin password, including control chars. I want to limit the available chars.
+• Make a better encryption of the admin password that is saved in the binary file.
+• Use binary files for all save/load functions.
+
+
+
+
+Changelog:
+
+15/01/2018, v0.96: 
+- Fixed a bug in the list_cinemas_of_movie and list_movies_by_genre functions, by using strcmp function, to properly compare. 
+- Added a check if the new entries are duplicated. It only checks after entering all data of a movie or actor, not just the name, so it needs improvement.
+- Minor cosmetic changes (added my name under the program name on the menus, some changes in the messages, etc).
+- Added menu_title, invalid_selection functions to shorten the code a bit.
+- Added input validation for edit/delete genre functions.
+- Added confirmation question for save operations.
+- Added confirmation question for load operations, when there is already data in the memory. If there is no data, it doesn’t ask. Added some more comments in the source code.
+
+
+17/01/2018, v0.97
+- Added user selection menu as first screen. User menu has view-only options. Administrator menu has options to manage everything. There is also a load database option in user selection menu.
+- Added password protection for administrator menu. Default admin pass is ‘admin’ and there is a secret developer pass that can also be used to enter the admin menu (not so secret for you, it’s in the source code!).
+- Added option to change admin password. It accepts any char, including control chars. Max length 20 chars. Restriction: you can’t use backspace if you make a mistake, as it accepts it as a char too.
+- Added a small loop to display asterisks when typing passwords. 
+Loop taken from http://codingstreet.com/c-code-to-hide-input-password/
+- After changing default admin password, new password is saved in a binary file topsecret.dat and is loaded when you start again the program, making the default pass ‘admin’ to not work anymore. (the developer pass still works ofc). Added a little trick to ‘encrypt’ the password in the file, so it’s not directly readable.
+
+20/01/2018, v0.98
+- Major changes in the cinemas structure.  
+- Cinema names are no longer predefined. There are now options to create,edit and delete cinemas in the cinemas menu.
+- There is no limit anymore when assigning movies to cinemas: user can select the number of the movies and it can be different for each cinema. That number is saved in the structure for use in other functions.
+- Adjusted several functions to work with the new structure of the cinemas. (save/load, associations, etc)
+- Added question for user confirmation to all edit/delete functions.
+- Lots of small cosmetic changes, improvements to the displayed messages,etc.
+
+
+21/01/2018, v0.99
+- Major changes in the movies structure.
+- There is no limit anymore when assigning actors to movies: user can select the number of the actors and it can be different for each movie. That number is saved in the structure for use in other functions.
+- Adjusted several functions to work with the new structure of the movies. (save/load, associations, etc)~
+- Minor tweak in edit function to get rid of compiler warnings (using gets instead of scanf with subset). I now get 0 warnings.
+- Improved duplicate checks when creating cinemas, movies, actors, genres. 
+- Added duplicate checks when editing cinemas, movies, actors, genres. If duplicates are found in other entries, no changes are made. If the new name is same as the old or different(but not duplicate), it proceeds normally to the rest of the edit function.
+
+22/01/2018, v0.99a
+- Changed all gets() to fgets() to limit the input to the available, cause bigger than NAME_SIZE inputs could lead to crashes in several functions. Used fflush(stdin) to discard the extra input before the next fgets.
+- Added duplicate checks to the association functions.
+- When associating movies to cinemas and actors to movies, the selections are added to the ones that had been already associated before, if any. Previously, it was just associating from scratch every time, overwriting any previous associations.
+- Added options to delete and edit associations, with duplicate checks,etc.
+- Added new Manage Associations menu, which is under the admin menu and contains all the associations related options.]]>
+			</notes>
+		</Option>
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/CinemaManagement" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/CinemaManagement" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_box.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" use_define="0" update_manifest="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

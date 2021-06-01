@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1517678595 source:c:\users\wiznick\documents\!ufp\algorithms and programming\cinemamanagement\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<conio.h>
+	<conio2.h>
+	"menu_box.h"
+
+1517444524 c:\users\wiznick\documents\!ufp\algorithms and programming\cinemamanagement\menu_box.h
+
